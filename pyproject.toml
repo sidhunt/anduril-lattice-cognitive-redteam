@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lattice-cognitive-redteam"
+version = "0.1.0"
+description = "Adversarial Human-in-the-Loop Simulation & Cognitive Red-Team Architecture for Autonomous Defense Operating Systems (Anduril Lattice Twin)"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Siddhant Badola", email = "sid@dissid.ca" }
+]
+license = { text = "Apache-2.0" }
+keywords = ["defense-tech", "anduril", "lattice", "cognitive-modeling", "markov-chain", "maslow", "red-team", "ai-simulation"]
+dependencies = [
+    "numpy>=1.22.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+lattice-cognitive = "lattice_cognitive.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v"
