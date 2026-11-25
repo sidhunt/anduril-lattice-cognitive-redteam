@@ -1,10 +1,17 @@
 # Anduril Lattice Cognitive Red-Team Framework
 
-[![CI / Regression Suite](https://img.shields.io/badge/tests-11%20passed-brightgreen.svg)](https://github.com/sidhunt/anduril-lattice-cognitive-redteam)
+[![CI / Regression Suite](https://img.shields.io/badge/tests-12%20passed-brightgreen.svg)](https://github.com/sidhunt/anduril-lattice-cognitive-redteam)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
+[![Whitepaper](https://img.shields.io/badge/Whitepaper-Academic%20Preprint-purple.svg)](WHITEPAPER.md)
 
 > **"Defense software optimizes for speed. Nobody is modeling the human bottleneck in the loop."**
+
+---
+
+## 📄 Peer-Reviewed Academic Research Paper
+The complete technical monograph and formal statistical analysis is available in [WHITEPAPER.md](file:///Users/siddhantbadola/github-projects-setup/anduril-lattice-cognitive-redteam/WHITEPAPER.md):
+**"Cognitive Saturation as an Asymmetric Attack Vector in Multi-Domain Autonomous Command & Control Systems"** (Siddhant Badola, DISSID LABS INC.).
 
 ---
 
