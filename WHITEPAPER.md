@@ -37,7 +37,38 @@ If an asymmetric adversary intentionally drives $\Delta t_{\text{authorization}}
 
 ---
 
-### 2. Theoretical Grounding: Adversarial Maslowian Hierarchy
+### 2. Related Work & Theoretical Foundation: Compounding on Prior Art
+
+The study of human interaction with high-tempo automated defense systems rests on foundational milestones across aerospace, human factors engineering, and military psychology:
+
+```
+[ Cummings et al. (2007) ] ──▶ [ Endsley & Kiris (1995) ] ──▶ [ Hawley (2017) Patriot ARL ]
+   Operator Capacity Limit        Out-of-the-Loop Deficit        Automation Bias & Fratricide
+  (70% Utilization / WTI)        (SA Latency Breakdown)          ("All-or-None" Brittleness)
+            │                              │                                  │
+            └──────────────────────────────┼──────────────────────────────────┘
+                                           ▼
+                 [ THIS WORK: Adversarial Cognitive Saturation ]
+           • Cognitive load modeled as an intentional attack vector
+           • Bayesian Markov adversary exploiting operator queuing dynamics
+           • Cognitive Resilience Architecture (CRA) restoring decision buffer
+```
+
+#### 2.1 Operator Capacity Limits & Interaction Wait Time (Cummings et al.)
+In multi-UAV and autonomous supervisory control, Cummings, Guerlain, and Mitchell (2007, 2008) established mathematical models of operator capacity. Their work proved that when human utilization exceeds **~70%**, operator decision latency creates exponential queues termed **Interaction Wait Times (WTI)**. When an operator supervises multiple concurrent tracks, any alert arrival rate exceeding cognitive throughput induces catastrophic task backlog and operational collapse.
+
+#### 2.2 Out-of-the-Loop (OOTL) Performance Deficit (Endsley et al.)
+Endsley and Kiris (1995) identified the Out-of-the-Loop (OOTL) performance problem: as systems transition from manual control to supervisory automation, operators suffer degradation in Level 1 (Perception), Level 2 (Comprehension), and Level 3 (Projection) Situation Awareness (SA). In ultra-compressed air defense scenarios, when automated tracking requires sudden human intervention, regaining situational awareness consumes prohibitive latency, frequently missing the intercept envelope entirely.
+
+#### 2.3 Automation Bias & The Patriot Fratricides (Hawley / U.S. Army Research Lab)
+The seminal human-factors investigation of the 2003 Operation Iraqi Freedom Patriot missile fratricides conducted by Dr. John K. Hawley (ARL / CNAS, 2017) demonstrated the fatal consequences of compressed decision windows. Under high stress and rapid flight profiles, human operators were forced to make life-or-death intercept decisions within seconds. Because the system offered "all-or-none autonomy" with zero dynamic decision leverage points, operators succumbed to **automation bias**—rubber-stamping spurious missile classifications that resulted in the shootdown of friendly coalition aircraft (a British Tornado GR4 and a U.S. Navy F/A-18C). Hawley concluded that a nominal human-in-the-loop is an illusion if decision timelines eliminate meaningful cognitive evaluation.
+
+#### 2.4 The Missing Dimension: From System Flaw to Adversarial Weapon
+Prior literature universally treats operator cognitive saturation as an emergent system defect or training deficiency. **Our core contribution bridges this gap:** we model cognitive load not as an unfortunate human limitation, but as an **intentional, weaponizable dimension of asymmetric warfare**. Near-peer adversaries aware of Western doctrinal compliance (DoDD 3000.09) actively modulate their tactical maneuvers to induce the exact WTI queues modeled by Cummings and the automation brittleness observed by Hawley. The Cognitive Resilience Architecture (CRA) introduced herein directly provides the missing adaptive buffer to prevent supervisory collapse.
+
+---
+
+### 3. Theoretical Grounding: Adversarial Maslowian Hierarchy
 
 Conventional red-team models treat adversary unmanned assets as kinematic point masses executing deterministic waypoints. In peer and near-peer conflicts, however, defending forces face human-commanded swarms or adaptive autonomous platforms exhibiting varying operational risk tolerances.
 
@@ -187,9 +218,13 @@ The Anduril Lattice Cognitive Red-Team framework offers a mathematically formal,
 ### References
 1. Hick, W. E. (1952). *On the rate of gain of information.* Quarterly Journal of Experimental Psychology, 4(1), 11-26.
 2. Miller, G. A. (1956). *The magical number seven, plus or minus two: Some limits on our capacity for processing information.* Psychological Review, 63(2), 81-97.
-3. U.S. Department of Defense. (2023). *Directive 3000.09: Autonomy in Weapon Systems.*
-4. Endsley, M. R. (1995). *Toward a theory of situation awareness in dynamic systems.* Human Factors, 37(1), 32-64.
-5. Vicente, K. J. (1999). *Cognitive work analysis: Toward safe, productive, and healthy computer-based work.* CRC Press.
-6. Kahneman, D., & Tversky, A. (1979). *Prospect theory: An analysis of decision under risk.* Econometrica, 47(2), 263-291.
-7. Scharre, P. (2018). *Army of None: Autonomous Weapons and the Future of War.* W. W. Norton & Company.
-8. Luckey, P. (2017). *Anduril Industries: Transforming defense capabilities through autonomy and software-first systems.*
+3. Cummings, M. L., & Guerlain, S. (2007). *Developing operator capacity estimates for supervisory control of autonomous vehicles.* Human Factors, 49(1), 1-15.
+4. Cummings, M. L., & Mitchell, P. J. (2008). *Predicting controller capacity in supervisory control of multiple UAVs.* IEEE Transactions on Systems, Man, and Cybernetics - Part A: Systems and Humans, 38(2), 451-460.
+5. Endsley, M. R., & Kiris, E. O. (1995). *The out-of-the-loop performance problem and level of control in automation.* Human Factors, 37(2), 381-394.
+6. Hawley, J. K. (2017). *Patriot Wars: Automation and the Patriot Air and Missile Defense System.* Center for a New American Security (CNAS).
+7. U.S. Department of Defense. (2023). *Directive 3000.09: Autonomy in Weapon Systems.*
+8. Parasuraman, R., Sheridan, T. B., & Wickens, C. D. (2000). *A model for types and levels of human interaction with automation.* IEEE Transactions on Systems, Man, and Cybernetics - Part A, 30(3), 286-297.
+9. Vicente, K. J. (1999). *Cognitive work analysis: Toward safe, productive, and healthy computer-based work.* CRC Press.
+10. Kahneman, D., & Tversky, A. (1979). *Prospect theory: An analysis of decision under risk.* Econometrica, 47(2), 263-291.
+11. Scharre, P. (2018). *Army of None: Autonomous Weapons and the Future of War.* W. W. Norton & Company.
+12. Luckey, P. (2017). *Anduril Industries: Transforming defense capabilities through autonomy and software-first systems.*

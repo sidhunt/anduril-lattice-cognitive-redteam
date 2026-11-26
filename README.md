@@ -28,6 +28,13 @@ This creates a critical asymmetry:
 
 This repository provides an open-source, red-team simulation framework and **Cognitive Resilience Architecture (CRA)** to quantify, predict, and mitigate operator cognitive saturation on autonomous defense platforms.
 
+### 📚 Compounding on Prior Art
+Our research directly builds upon and unifies seminal defense & human factors literature:
+- **Dr. Missy Cummings (MIT/Duke):** *Operator Capacity & Interaction Wait Times (WTI)* in multi-UAV supervisory control (70% utilization threshold).
+- **Dr. Mica Endsley (US Air Force Chief Scientist):** *Out-of-the-Loop (OOTL) Performance Deficit* and Situation Awareness collapse.
+- **Dr. John K. Hawley (Army Research Lab):** *Patriot Wars (CNAS 2017)*, documenting how compressed engagement windows and "all-or-none" automation led to the 2003 OIF air defense fratricides.
+- **Our Contribution:** While prior literature treated cognitive overload as a passive design flaw, **we model cognitive saturation as an active, weaponizable adversary attack vector**, and evaluate the **Cognitive Resilience Architecture (CRA)** to restore tactical decision buffers.
+
 ---
 
 ## 🎖️ Origin & Context
