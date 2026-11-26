@@ -42,3 +42,8 @@ htmlcov/
 .DS_Store
 .vscode/
 .idea/
+
+# Rust
+target/
+**/target/
+
