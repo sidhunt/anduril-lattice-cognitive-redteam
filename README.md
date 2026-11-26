@@ -47,6 +47,10 @@ As autonomous sentry networks scale across land, sea, and air, the next grand ch
 
 ## 📐 Architecture: Three Core Modules
 
+<p align="center">
+  <img src="assets/cognitive_architecture_infographic.png" alt="Anduril Lattice Cognitive Architecture & Red-Team Pipeline" width="100%" />
+</p>
+
 ```
                     ┌──────────────────────────────────────────────┐
                     │        Adversary Persona Engine              │
