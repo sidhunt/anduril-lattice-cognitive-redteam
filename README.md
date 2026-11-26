@@ -1,6 +1,6 @@
 # Anduril Lattice Cognitive Red-Team Framework
 
-[![CI / Regression Suite](https://img.shields.io/badge/tests-12%20passed-brightgreen.svg)](https://github.com/sidhunt/anduril-lattice-cognitive-redteam)
+[![CI / Regression Suite](https://img.shields.io/badge/tests-13%20passed-brightgreen.svg)](https://github.com/sidhunt/anduril-lattice-cognitive-redteam)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
 [![Whitepaper](https://img.shields.io/badge/Whitepaper-Academic%20Preprint-purple.svg)](WHITEPAPER.md)
