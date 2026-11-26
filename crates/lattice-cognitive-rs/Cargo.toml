@@ -1,0 +1,29 @@
+[package]
+name = "lattice_cognitive_rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["Siddhant Badola <sid@dissid.ca>"]
+description = "High-throughput Rust core with PyO3 bindings for zero-copy C2 track filtering and SITL telemetry ingest"
+license = "Apache-2.0"
+
+[lib]
+name = "lattice_cognitive_rs"
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["extension-module"]
+extension-module = ["pyo3/extension-module"]
+
+[dependencies]
+pyo3 = { version = "0.23", features = ["abi3-py39"] }
+serde = { version = "1.0", features = ["derive"] }
+byteorder = "1.5"
+
+[dev-dependencies]
+pyo3 = { version = "0.23", features = ["auto-initialize"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"

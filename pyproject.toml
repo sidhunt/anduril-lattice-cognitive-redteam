@@ -29,6 +29,10 @@ dev = [
 [project.scripts]
 lattice-cognitive = "lattice_cognitive.cli:main"
 
+[tool.setuptools.packages.find]
+include = ["lattice_cognitive*"]
+exclude = ["assets*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
