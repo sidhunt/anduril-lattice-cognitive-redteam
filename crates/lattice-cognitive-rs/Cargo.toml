@@ -1,3 +1,5 @@
+[workspace]
+
 [package]
 name = "lattice_cognitive_rs"
 version = "0.1.0"

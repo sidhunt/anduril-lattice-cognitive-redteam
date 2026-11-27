@@ -14,6 +14,24 @@ from pydantic import BaseModel, Field
 from lattice_cognitive.twin.schema import TrackEntity, Classification
 from lattice_cognitive.twin.mock_sdk import MockLatticeTwin
 
+CRC_EXTRA_GLOBAL_POSITION_INT = 104
+
+
+def mavlink_crc_accumulate(byte_val: int, crc: int) -> int:
+    """Official MAVLink ITU X.25 CRC-16 checksum accumulator."""
+    tmp = (byte_val ^ (crc & 0xFF)) & 0xFF
+    tmp = (tmp ^ ((tmp << 4) & 0xFF)) & 0xFF
+    return ((crc >> 8) ^ (tmp << 8) ^ (tmp << 3) ^ ((tmp >> 4) & 0x0F)) & 0xFFFF
+
+
+def mavlink_crc_calculate(buf: bytes | bytearray, crc_extra: int) -> int:
+    """Calculates official MAVLink X.25 CRC-16 seeded with message CRC_EXTRA."""
+    crc = 0xFFFF
+    for b in buf:
+        crc = mavlink_crc_accumulate(b, crc)
+    crc = mavlink_crc_accumulate(crc_extra, crc)
+    return crc
+
 try:
     import lattice_cognitive_rs as lrs
     RUST_CORE_AVAILABLE = True
@@ -102,32 +120,39 @@ class SitlAdapter:
         while idx < buf_len:
             magic = raw_bytes[idx]
             if magic == 0xFE and idx + 36 <= buf_len:
+                let_len = raw_bytes[idx + 1]
                 sys_id = raw_bytes[idx + 3]
                 msg_id = raw_bytes[idx + 5]
-                if msg_id == 33: # GLOBAL_POSITION_INT
-                    payload = raw_bytes[idx + 6 : idx + 34]
-                    time_boot_ms, lat_e7, lon_e7, alt_mm, rel_alt_mm, vx_cms, vy_cms, vz_cms, _ = struct.unpack(
-                        "<IiiiiHHhH", payload
+                if msg_id == 33 and let_len >= 28: # GLOBAL_POSITION_INT
+                    expected_crc = raw_bytes[idx + 34] | (raw_bytes[idx + 35] << 8)
+                    computed_crc = mavlink_crc_calculate(
+                        raw_bytes[idx + 1 : idx + 34],
+                        CRC_EXTRA_GLOBAL_POSITION_INT,
                     )
-                    lat_deg = lat_e7 * 1e-7
-                    lon_deg = lon_e7 * 1e-7
-                    vx = vx_cms / 100.0
-                    vy = vy_cms / 100.0
-                    speed = math.sqrt(vx * vx + vy * vy)
-
-                    tracks.append(
-                        TrackEntity(
-                            entity_id=f"SITL-UAV-{sys_id:03d}",
-                            callsign=f"SITL-SWARM-{sys_id:02d}",
-                            classification=Classification.UNKNOWN,
-                            latitude=lat_deg,
-                            longitude=lon_deg,
-                            altitude_m=max(10.0, rel_alt_mm / 1000.0),
-                            speed_mps=speed,
-                            heading_deg=math.degrees(math.atan2(vx, vy)) % 360.0,
-                            rcs_sqm=0.08,
+                    if expected_crc == computed_crc:
+                        payload = raw_bytes[idx + 6 : idx + 34]
+                        time_boot_ms, lat_e7, lon_e7, alt_mm, rel_alt_mm, vx_cms, vy_cms, vz_cms, _ = struct.unpack(
+                            "<IiiiihhhH", payload
                         )
-                    )
+                        lat_deg = lat_e7 * 1e-7
+                        lon_deg = lon_e7 * 1e-7
+                        vx = vx_cms / 100.0
+                        vy = vy_cms / 100.0
+                        speed = math.sqrt(vx * vx + vy * vy)
+
+                        tracks.append(
+                            TrackEntity(
+                                entity_id=f"SITL-UAV-{sys_id:03d}",
+                                callsign=f"SITL-SWARM-{sys_id:02d}",
+                                classification=Classification.UNKNOWN,
+                                latitude=lat_deg,
+                                longitude=lon_deg,
+                                altitude_m=max(10.0, rel_alt_mm / 1000.0),
+                                speed_mps=speed,
+                                heading_deg=math.degrees(math.atan2(vx, vy)) % 360.0,
+                                rcs_sqm=0.08,
+                            )
+                        )
                 idx += 36
             else:
                 idx += 1
@@ -168,7 +193,7 @@ class SitlAdapter:
             alt_mm = int(alt_m * 1000.0)
 
             payload = struct.pack(
-                "<IiiiiHHhH",
+                "<IiiiihhhH",
                 int(elapsed_s * 1000.0),
                 lat_e7,
                 lon_e7,
@@ -182,7 +207,8 @@ class SitlAdapter:
 
             frame = bytearray([0xFE, 28, i, i, 1, 33])
             frame.extend(payload)
-            frame.extend([0x55, 0xAA]) # Mock checksum
+            crc = mavlink_crc_calculate(frame[1:], CRC_EXTRA_GLOBAL_POSITION_INT)
+            frame.extend([crc & 0xFF, (crc >> 8) & 0xFF])
             packet_bytes.extend(frame)
 
         return bytes(packet_bytes)
