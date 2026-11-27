@@ -8,6 +8,25 @@ pub const MAVLINK_V2_STX: u8 = 0xFD;
 pub const MSG_ID_HEARTBEAT: u32 = 0;
 pub const MSG_ID_ATTITUDE: u32 = 30;
 pub const MSG_ID_GLOBAL_POSITION_INT: u32 = 33;
+pub const CRC_EXTRA_GLOBAL_POSITION_INT: u8 = 104;
+
+/// Computes standard MAVLink X.25 CRC-16 checksum accumulator.
+#[inline]
+pub fn mavlink_crc_accumulate(byte: u8, crc: &mut u16) {
+    let mut tmp = (byte as u16) ^ (*crc & 0x00FF);
+    tmp ^= (tmp << 4) & 0x00FF;
+    *crc = (*crc >> 8) ^ (tmp << 8) ^ (tmp << 3) ^ ((tmp >> 4) & 0x000F);
+}
+
+/// Calculates official MAVLink X.25 CRC-16 across payload and seeds with message CRC_EXTRA.
+pub fn mavlink_crc_calculate(bytes: &[u8], crc_extra: u8) -> u16 {
+    let mut crc: u16 = 0xFFFF;
+    for &b in bytes {
+        mavlink_crc_accumulate(b, &mut crc);
+    }
+    mavlink_crc_accumulate(crc_extra, &mut crc);
+    crc
+}
 
 /// Ingested MAVLink Telemetry Point.
 #[derive(Debug, Clone, Default)]
@@ -102,10 +121,19 @@ impl MavlinkSitlEngine {
                 let msg_id = buffer[idx + 5] as u32;
 
                 if msg_id == MSG_ID_GLOBAL_POSITION_INT && payload_len >= 28 {
-                    let payload = &buffer[idx + 6..idx + 6 + 28];
-                    if let Ok(pos) = Self::decode_global_position(payload, sys_id) {
-                        batch.push(pos.to_track(self.origin_lat, self.origin_lon));
-                        parsed_count += 1;
+                    let expected_crc = (buffer[idx + packet_len - 2] as u16)
+                        | ((buffer[idx + packet_len - 1] as u16) << 8);
+                    let computed_crc = mavlink_crc_calculate(
+                        &buffer[idx + 1..idx + packet_len - 2],
+                        CRC_EXTRA_GLOBAL_POSITION_INT,
+                    );
+
+                    if expected_crc == computed_crc {
+                        let payload = &buffer[idx + 6..idx + 6 + 28];
+                        if let Ok(pos) = Self::decode_global_position(payload, sys_id) {
+                            batch.push(pos.to_track(self.origin_lat, self.origin_lon));
+                            parsed_count += 1;
+                        }
                     }
                 }
                 idx += packet_len;
@@ -220,9 +248,10 @@ impl MavlinkSitlEngine {
             frame.push(MSG_ID_GLOBAL_POSITION_INT as u8);
             frame.extend_from_slice(&payload);
 
-            // Mock checksum bytes
-            frame.push(0x55);
-            frame.push(0xAA);
+            // Calculate official ITU X.25 CRC-16 checksum across frame header + payload
+            let crc = mavlink_crc_calculate(&frame[1..], CRC_EXTRA_GLOBAL_POSITION_INT);
+            frame.push((crc & 0xFF) as u8);
+            frame.push(((crc >> 8) & 0xFF) as u8);
 
             packet_bytes.extend_from_slice(&frame);
         }

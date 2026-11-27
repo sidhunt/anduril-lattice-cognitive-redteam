@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Unit Tests
+        run: |
+          cargo test --manifest-path crates/lattice-cognitive-rs/Cargo.toml --no-default-features
+
+      - name: Build Rust PyO3 Extension
+        run: |
+          cargo build --release --manifest-path crates/lattice-cognitive-rs/Cargo.toml
+          cp crates/lattice-cognitive-rs/target/release/liblattice_cognitive_rs.so lattice_cognitive_rs.so || cp crates/lattice-cognitive-rs/target/release/liblattice_cognitive_rs.dylib lattice_cognitive_rs.so
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run Pytest Suite
+        run: |
+          pytest -c pyproject.toml -v

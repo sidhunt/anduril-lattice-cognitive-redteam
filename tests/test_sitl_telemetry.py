@@ -26,6 +26,23 @@ def test_sitl_telemetry_generation_and_parsing():
         assert -117.0 <= track.longitude <= -116.0
 
 
+def test_sitl_negative_velocity_packing_regression():
+    """
+    Regression test for Issue #12: MAVLink GLOBAL_POSITION_INT velocity fields
+    (vx, vy, vz) are signed int16 (cm/s). Telemetry packing must handle negative
+    velocities without raising struct.error.
+    """
+    adapter = SitlAdapter(origin_lat=33.5, origin_lon=-116.5)
+    scenario = VirtualSwarmScenario(num_drones=8, feint_radius_m=2000.0)
+
+    # Test across multiple time steps covering all quadrants (sin/cos negative)
+    for t in [0.0, 1.5, 3.14, 5.0, 7.85, 10.0]:
+        stream_bytes = adapter.generate_virtual_swarm_telemetry(scenario, elapsed_s=t)
+        assert len(stream_bytes) > 0
+        tracks = adapter.parse_mavlink_stream(stream_bytes)
+        assert len(tracks) == 8
+
+
 def test_sitl_twin_injection_and_hesitation_loop():
     twin = MockLatticeTwin()
     adapter = SitlAdapter(origin_lat=33.5, origin_lon=-116.5)
